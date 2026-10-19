@@ -564,20 +564,6 @@
   }
 
   /* ---- canvases & overlays ---- */
-  #click-badge{
-    position:fixed;
-    top:16px; right:16px;
-    font-family:'Share Tech Mono','SFMono-Regular','PingFang SC',monospace;
-    font-size:12px;
-    color:var(--muted);
-    background:rgba(15,20,27,0.75);
-    border:1px solid var(--border);
-    padding:6px 10px;
-    border-radius:6px;
-    z-index:51;
-    backdrop-filter:blur(4px);
-  }
-  #click-badge b{color:var(--accent); font-weight:500;}
 
   /* ---- custom cursor ---- */
   #cursor-dot, #cursor-ring{
@@ -1137,7 +1123,6 @@
     </div>
   </div>
 
-  <div id="click-badge">clicks: <b id="click-count">0</b></div>
   <div id="toast"></div>
   <div id="cursor-dot"></div>
   <div id="cursor-ring"></div>
@@ -1541,13 +1526,6 @@
         e.preventDefault();
         termInput.focus();
       }
-    });
-
-    /* ================= favicon-ish click counter ================= */
-    let clickCount = 0;
-    document.body.addEventListener('click', () => {
-      clickCount++;
-      document.getElementById('click-count').textContent = clickCount;
     });
 
     /* ================= cursor ================= */
