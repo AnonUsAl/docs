@@ -564,10 +564,6 @@
   }
 
   /* ---- canvases & overlays ---- */
-  #three-canvas{position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.68;}
-  #fx-canvas{position:fixed; inset:0; pointer-events:none; z-index:50;}
-  #matrix-canvas{position:fixed; inset:0; pointer-events:none; z-index:44; opacity:0.62; display:none;}
-
   #click-badge{
     position:fixed;
     top:16px; right:16px;
@@ -652,7 +648,6 @@
       linear-gradient(rgba(0,0,0,0.045) 1px, transparent 1px),
       linear-gradient(90deg, rgba(0,0,0,0.045) 1px, transparent 1px);
   }
-  body[data-theme="paper"] #three-canvas{opacity:0.24;}
   body[data-theme="paper"]::after{opacity:.028; mix-blend-mode:multiply;}
   body[data-theme="paper"] .terminal{
     box-shadow:
@@ -731,9 +726,20 @@
     body{padding:24px 10px;}
     .terminal{transform:none;}
     body::before{background-size:36px 36px; opacity:.48;}
-    #three-canvas{opacity:.46;}
-    #fx-canvas{opacity:.7;}
   }
+  body.low-performance .body > *,
+  body.low-performance .titlebar,
+  body.low-performance .statusbar,
+  body.low-performance .pill .pulse,
+  body.low-performance .footer .cursor-block,
+  body.low-performance .name.glitching,
+  body.low-performance .name.glitching::before,
+  body.low-performance .name.glitching::after{animation:none !important; opacity:1;}
+  body.low-performance .terminal::after{display:none;}
+  body.low-performance.hyper{animation:none;}
+  body.low-performance .glare{display:none;}
+  body.low-performance #toast,
+  body.low-performance #theme-pop{-webkit-backdrop-filter:none; backdrop-filter:none;}
 
   @media (min-width: 560px){
     .links{grid-template-columns:1fr 1fr; gap:2px 12px;}
@@ -898,20 +904,19 @@
     </div>
   </div>
 
-  <canvas id="three-canvas"></canvas>
-  <canvas id="fx-canvas"></canvas>
-  <canvas id="matrix-canvas"></canvas>
-
   <div id="click-badge">clicks: <b id="click-count">0</b></div>
   <div id="toast"></div>
   <div id="cursor-dot"></div>
   <div id="cursor-ring"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
     'use strict';
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const finePointer = matchMedia('(pointer: fine)').matches;
+    const lowPerformance = navigator.connection?.saveData === true ||
+      (matchMedia('(max-width: 559px)').matches &&
+       ((navigator.hardwareConcurrency || 4) <= 4 || (navigator.deviceMemory || 4) <= 4));
+    if(lowPerformance) document.body.classList.add('low-performance');
     let mouseNX = 0, mouseNY = 0; // normalized -1..1
 
     document.addEventListener('mousemove', (e) => {
@@ -1256,8 +1261,10 @@
       clearTimeout(glitchTimer);
       glitchTimer = setTimeout(() => nameEl.classList.remove('glitching'), 420);
     }
-    document.addEventListener('pointerdown', triggerGlitch);
-    setInterval(triggerGlitch, 2600);
+    if(!lowPerformance){
+      document.addEventListener('pointerdown', triggerGlitch);
+      setInterval(triggerGlitch, 2600);
+    }
 
     /* ================= start ================= */
     document.body.classList.remove('preboot');
